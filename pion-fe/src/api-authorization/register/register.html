@@ -1,0 +1,28 @@
+<h1>Register</h1>
+<div class="row">
+  <div class="col-md-8">
+    <section>
+      <form (submit)="register(); $event.preventDefault()">
+        <h2>Create a new account.</h2>
+        <hr />
+        <div class="form-floating mb-3">
+          <input [(ngModel)]="model.fullName" name="fullName" id="fullName-input" class="form-control"
+            aria-required="true" placeholder="name@example.com" />
+          <label for="fullName-input" class="form-label">Full name</label>
+        </div>
+        <div class="form-floating mb-3">
+          <input [(ngModel)]="model.email" type="email" name="email" id="email-input" class="form-control"
+            aria-required="true" placeholder="name@example.com" />
+          <label for="email-input" class="form-label">Email</label>
+        </div>
+        <div class="form-floating mb-3">
+          <input [(ngModel)]="model.password" type="password" name="password" id="password-input" class="form-control"
+            aria-required="true" />
+          <label for="password-input" class="form-label">Password</label>
+        </div>
+        <button class="w-100 btn btn-lg btn-primary" type="submit">Register</button>
+        <div *ngIf="error" class="text-danger" role="alert">{{ error }}</div>
+      </form>
+    </section>
+  </div>
+</div>

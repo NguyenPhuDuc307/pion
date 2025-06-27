@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Nguyen Phu Duc",
+  "classifications": [ "Web", "API" ],
+  "name": "Pion Fullstack Template",
+  "identity": "Pion.Templates.Fullstack",
+  "shortName": "pion",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "sourceName": "pion",
+  "preferNameDirectory": true
+}
