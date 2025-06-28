@@ -1,5 +1,8 @@
+using System.IO;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -7,6 +10,15 @@ using Microsoft.OpenApi.Models;
 using pion_api.Data;
 using pion_api.Models;
 using pion_api.Services;
+using Microsoft.AspNetCore.Certificates.Generation;
+using Microsoft.Extensions.Internal;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using Microsoft.AspNetCore.DataProtection.XmlEncryption;
+using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
+using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
+using Microsoft.AspNetCore.DataProtection.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -95,6 +107,13 @@ builder.Services.AddCors(options =>
         });
 });
 
+// Data Protection: persist keys and encrypt with certificate (chuẩn .NET 9)
+var certPassword = Environment.GetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Password");
+var cert = new X509Certificate2("/https/aspnetapp.pfx", certPassword, X509KeyStorageFlags.DefaultKeySet);
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo("/root/.aspnet/DataProtection-Keys"))
+    .ProtectKeysWithCertificate(cert);
+
 var app = builder.Build();
 
 app.UseDefaultFiles();
@@ -110,7 +129,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection(); // Tắt redirect tự động sang HTTPS để tránh trình duyệt tự chuyển sang https
 
 app.UseAuthentication();
 app.UseAuthorization();

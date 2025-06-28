@@ -1,4 +1,3 @@
-version: "3.8"
 services:
   pion-api:
     build:
@@ -6,4 +5,11 @@ services:
       dockerfile: ./pion-api/Dockerfile
     ports:
       - "8080:8080"
+      - "8443:443"
     container_name: pion-api
+    environment:
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=Admin@123
+      - ASPNETCORE_URLS=http://+:8080;https://+:443
+      - ASPNETCORE_ENVIRONMENT=Development
+    volumes:
+      - ./dataprotection-keys:/root/.aspnet/DataProtection-Keys
