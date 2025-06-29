@@ -1,7 +1,7 @@
 services:
   pion-api:
     build:
-      context: .
+      context: ./
       dockerfile: ./pion-api/Dockerfile
     ports:
       - "8080:8080"
@@ -13,3 +13,10 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
     volumes:
       - ./dataprotection-keys:/root/.aspnet/DataProtection-Keys
+  pion-fe:
+    build:
+      context: ./pion-fe
+      dockerfile: Dockerfile
+    ports:
+      - "4200:80"
+    container_name: pion-fe

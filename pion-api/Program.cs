@@ -129,7 +129,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// app.UseHttpsRedirection(); // Tắt redirect tự động sang HTTPS để tránh trình duyệt tự chuyển sang https
+// app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();

@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://mydomain.com/api' // địa chỉ backend thật
+  apiUrl: 'http://localhost:8080/api' // địa chỉ backend trong Docker Compose (HTTP)
 };
