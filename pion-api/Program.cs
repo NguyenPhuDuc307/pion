@@ -107,15 +107,18 @@ builder.Services.AddCors(options =>
 
 var certPassword = Environment.GetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Password");
 
+var app = builder.Build();
+
+if (!app.Environment.IsEnvironment("Development") || File.Exists("/https/aspnetapp.pfx"))
+{
 #pragma warning disable SYSLIB0057
-var cert = new X509Certificate2("/https/aspnetapp.pfx", certPassword, X509KeyStorageFlags.DefaultKeySet);
+    var cert = new X509Certificate2("/https/aspnetapp.pfx", certPassword, X509KeyStorageFlags.DefaultKeySet);
 #pragma warning restore SYSLIB0057
 
-builder.Services.AddDataProtection()
-    .PersistKeysToFileSystem(new DirectoryInfo("/root/.aspnet/DataProtection-Keys"))
-    .ProtectKeysWithCertificate(cert);
-
-var app = builder.Build();
+    builder.Services.AddDataProtection()
+        .PersistKeysToFileSystem(new DirectoryInfo("/root/.aspnet/DataProtection-Keys"))
+        .ProtectKeysWithCertificate(cert);
+}
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
