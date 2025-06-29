@@ -109,7 +109,11 @@ builder.Services.AddCors(options =>
 
 // Data Protection: persist keys and encrypt with certificate (chuẩn .NET 9)
 var certPassword = Environment.GetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Password");
+
+#pragma warning disable SYSLIB0057
 var cert = new X509Certificate2("/https/aspnetapp.pfx", certPassword, X509KeyStorageFlags.DefaultKeySet);
+#pragma warning restore SYSLIB0057
+
 builder.Services.AddDataProtection()
     .PersistKeysToFileSystem(new DirectoryInfo("/root/.aspnet/DataProtection-Keys"))
     .ProtectKeysWithCertificate(cert);
