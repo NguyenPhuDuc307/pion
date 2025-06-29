@@ -23,8 +23,6 @@ using Microsoft.AspNetCore.DataProtection.Repositories;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
-// Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -107,7 +105,6 @@ builder.Services.AddCors(options =>
         });
 });
 
-// Data Protection: persist keys and encrypt with certificate (chuẩn .NET 9)
 var certPassword = Environment.GetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Password");
 
 #pragma warning disable SYSLIB0057
