@@ -46,7 +46,7 @@ namespace pion_api.Tests.Controllers
         public async Task Login_ReturnsUnauthorized_WhenCredentialsAreInvalid()
         {
             var loginDto = new LoginDto { Email = "wrong@example.com", Password = "wrong" };
-            _userManagerMock.Setup(x => x.FindByEmailAsync(loginDto.Email)).ReturnsAsync((ApplicationUser)null);
+            _userManagerMock.Setup(x => x.FindByEmailAsync(loginDto.Email)).ReturnsAsync((ApplicationUser?)null);
 
             var result = await _controller.Login(loginDto);
 

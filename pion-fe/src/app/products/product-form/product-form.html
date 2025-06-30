@@ -1,0 +1,32 @@
+<div class="container mt-4">
+  <h2 class="mb-4">{{ isEditMode ? 'Sửa sản phẩm' : 'Thêm sản phẩm' }}</h2>
+
+  <form (ngSubmit)="onSubmit()" #productForm="ngForm" class="needs-validation" novalidate>
+    <div class="mb-3">
+      <label for="name" class="form-label">Tên sản phẩm:</label>
+      <input type="text" id="name" name="name" class="form-control" [(ngModel)]="product.name" required />
+    </div>
+
+    <div class="mb-3">
+      <label for="tags" class="form-label">Tags:</label>
+      <ng-select id="tags" name="tags" [items]="availableTags" [(ngModel)]="product.tags"
+        [multiple]="true" bindLabel="name" placeholder="Chọn tag" [closeOnSelect]="false">
+      </ng-select>
+    </div>
+
+    <div class="mb-3">
+      <label for="image" class="form-label">Ảnh sản phẩm:</label>
+      <input type="file" id="image" class="form-control" accept="image/*" (change)="onFileSelected($event)" />
+    </div>
+
+    <!-- Xem trước ảnh -->
+    <div *ngIf="imagePreview" class="mb-3">
+      <label class="form-label">Xem trước:</label><br />
+      <img [src]="imagePreview" alt="Preview" class="img-thumbnail" style="max-width: 200px;" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+      {{ isEditMode ? 'Cập nhật' : 'Thêm mới' }}
+    </button>
+  </form>
+</div>
