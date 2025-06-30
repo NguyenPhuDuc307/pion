@@ -19,7 +19,7 @@ namespace pion_api.Tests.Controllers
         public AuthControllerTests()
         {
             var store = new Mock<IUserStore<ApplicationUser>>();
-            _userManagerMock = new Mock<UserManager<ApplicationUser>>(store.Object, null, null, null, null, null, null, null, null);
+            _userManagerMock = new Mock<UserManager<ApplicationUser>>(store.Object, null!, null!, null!, null!, null!, null!, null!, null!);
             _jwtServiceMock = new Mock<IJwtService>();
             _controller = new AuthController(_userManagerMock.Object, _jwtServiceMock.Object);
         }

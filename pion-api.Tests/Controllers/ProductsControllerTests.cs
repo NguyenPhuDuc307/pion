@@ -100,7 +100,7 @@ namespace pion_api.Tests.Controllers
             var result = await _controller.PutProduct(2, dto);
             Assert.IsType<NoContentResult>(result);
             var updated = await _context.Products.FindAsync(2);
-            Assert.Equal("Updated Product", updated.Name);
+            Assert.Equal("Updated Product", updated!.Name);
             Assert.Contains("tag5", updated.Tags);
             Assert.Contains("tag6", updated.Tags);
         }
