@@ -461,3 +461,203 @@ npm start
 ---
 
 Nếu cần chi tiết code mẫu cho file nào khác, hãy yêu cầu cụ thể tên file hoặc chức năng bạn muốn!
+
+### Ví dụ code mẫu CRUD sản phẩm cho Frontend (Angular)
+
+#### 1. product-list.component.ts
+```typescript
+import { Component, OnInit } from '@angular/core';
+import { ProductService } from '../../services/product.service';
+import { Product } from '../../models/product.model';
+
+@Component({
+  selector: 'app-product-list',
+  templateUrl: './product-list.component.html'
+})
+export class ProductListComponent implements OnInit {
+  products: Product[] = [];
+  searchKeyword = '';
+  constructor(private productService: ProductService) {}
+  ngOnInit() {
+    this.loadProducts();
+  }
+  loadProducts() {
+    this.productService.getAll().subscribe(data => this.products = data);
+  }
+  deleteProduct(id: number) {
+    this.productService.delete(id).subscribe(() => this.loadProducts());
+  }
+  onSearch() {
+    this.productService.search(this.searchKeyword).subscribe(data => this.products = data);
+  }
+  clearSearch() {
+    this.searchKeyword = '';
+    this.loadProducts();
+  }
+}
+```
+
+#### 2. product-list.component.html
+```html
+<div class="container mt-4">
+  <h2>Danh sách sản phẩm</h2>
+  <a routerLink="/products/create" class="btn btn-primary mb-2">Thêm sản phẩm</a>
+  <div class="mb-3">
+    <input type="text" [(ngModel)]="searchKeyword" placeholder="Tìm kiếm sản phẩm" class="form-control" style="max-width:300px; display:inline-block;">
+    <button class="btn btn-primary ms-2" (click)="onSearch()">Tìm kiếm</button>
+    <button class="btn btn-secondary ms-2" (click)="clearSearch()" *ngIf="searchKeyword">Xoá</button>
+  </div>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Tên</th>
+        <th>Tags</th>
+        <th>Ảnh</th>
+        <th>Hành động</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let p of products">
+        <td>{{p.id}}</td>
+        <td>{{p.name}}</td>
+        <td>{{p.tags.join(', ')}}</td>
+        <td><img *ngIf="p.imageUrl" [src]="p.imageUrl" width="80"></td>
+        <td>
+          <a [routerLink]="['/products/edit', p.id]" class="btn btn-sm btn-warning">Sửa</a>
+          <button (click)="deleteProduct(p.id)" class="btn btn-sm btn-danger">Xoá</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+```
+
+#### 3. product-form.component.ts (dùng cho tạo/sửa)
+```typescript
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ProductService } from '../../services/product.service';
+
+@Component({
+  selector: 'app-product-form',
+  templateUrl: './product-form.component.html'
+})
+export class ProductFormComponent implements OnInit {
+  form: FormGroup;
+  isEdit = false;
+  id?: number;
+  constructor(
+    private fb: FormBuilder,
+    private route: ActivatedRoute,
+    private router: Router,
+    private productService: ProductService
+  ) {
+    this.form = this.fb.group({
+      name: [''],
+      tags: [''],
+      file: [null]
+    });
+  }
+  ngOnInit() {
+    this.id = +this.route.snapshot.paramMap.get('id')!;
+    if (this.id) {
+      this.isEdit = true;
+      this.productService.getById(this.id).subscribe(p => {
+        this.form.patchValue({
+          name: p.name,
+          tags: p.tags.join(',')
+        });
+      });
+    }
+  }
+  onFileChange(event: any) {
+    if (event.target.files.length > 0) {
+      this.form.patchValue({ file: event.target.files[0] });
+    }
+  }
+  submit() {
+    const formData = new FormData();
+    formData.append('name', this.form.value.name);
+    formData.append('tags', JSON.stringify(this.form.value.tags.split(',')));
+    if (this.form.value.file) formData.append('file', this.form.value.file);
+    if (this.isEdit && this.id) {
+      this.productService.update(this.id, formData).subscribe(() => this.router.navigate(['/products']));
+    } else {
+      this.productService.create(formData).subscribe(() => this.router.navigate(['/products']));
+    }
+  }
+}
+```
+
+#### 4. product-form.component.html
+```html
+<div class="container mt-4">
+  <h2>{{ isEdit ? 'Sửa' : 'Thêm' }} sản phẩm</h2>
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <div class="mb-3">
+      <label>Tên sản phẩm</label>
+      <input formControlName="name" class="form-control">
+    </div>
+    <div class="mb-3">
+      <label>Tags (cách nhau bằng dấu phẩy)</label>
+      <input formControlName="tags" class="form-control">
+    </div>
+    <div class="mb-3">
+      <label>Ảnh</label>
+      <input type="file" (change)="onFileChange($event)" class="form-control">
+    </div>
+    <button class="btn btn-success" type="submit">Lưu</button>
+    <a routerLink="/products" class="btn btn-secondary ms-2">Quay lại</a>
+  </form>
+</div>
+```
+
+#### 5. product.service.ts (bổ sung CRUD)
+```typescript
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { Product } from '../models/product.model';
+import { environment } from '../../environments/environment';
+
+@Injectable({ providedIn: 'root' })
+export class ProductService {
+  private apiUrl = environment.apiUrl + '/products';
+  constructor(private http: HttpClient) {}
+  getAll(): Observable<Product[]> {
+    return this.http.get<Product[]>(this.apiUrl);
+  }
+  getById(id: number): Observable<Product> {
+    return this.http.get<Product>(`${this.apiUrl}/${id}`);
+  }
+  create(product: FormData): Observable<Product> {
+    return this.http.post<Product>(this.apiUrl, product);
+  }
+  update(id: number, product: FormData): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}`, product);
+  }
+  delete(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`);
+  }
+  search(keyword: string): Observable<Product[]> {
+    return this.http.get<Product[]>(`${this.apiUrl}/search`, { params: { keyword } });
+  }
+}
+```
+
+#### 6. Định nghĩa route cho CRUD
+```typescript
+// app.routes.ts
+import { Routes } from '@angular/router';
+import { ProductListComponent } from './products/product-list/product-list.component';
+import { ProductFormComponent } from './products/product-form/product-form.component';
+
+export const routes: Routes = [
+  { path: 'products', component: ProductListComponent },
+  { path: 'products/create', component: ProductFormComponent },
+  { path: 'products/edit/:id', component: ProductFormComponent },
+  // ... các route khác ...
+];
+```

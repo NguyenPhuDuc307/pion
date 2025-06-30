@@ -39,4 +39,8 @@ export class ProductService {
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+
+  search(keyword: string) {
+    return this.http.get<Product[]>(`${this.apiUrl}/search`, { params: { keyword } });
+  }
 }

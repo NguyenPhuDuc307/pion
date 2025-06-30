@@ -141,13 +141,30 @@ namespace pion_api.Controllers
 
             if (!string.IsNullOrEmpty(product.ImageUrl))
             {
-                await _storageService.DeleteFileAsync(product.ImageUrl.Replace("uploads/", ""));
+                // Pass full path to DeleteFileAsync
+                await _storageService.DeleteFileAsync(product.ImageUrl.TrimStart('/'));
             }
 
             _context.Products.Remove(product);
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        // GET: api/Products/search?keyword=abc
+        [HttpGet("search")]
+        [AllowAnonymous]
+        public async Task<ActionResult<IEnumerable<Product>>> SearchProducts([FromQuery] string keyword)
+        {
+            if (string.IsNullOrWhiteSpace(keyword))
+                return await _context.Products.ToListAsync();
+            var lower = keyword.ToLower();
+            // Use AsEnumerable to filter in memory for ToLower/Contains
+            var result = _context.Products
+                .AsEnumerable()
+                .Where(p => (p.Name != null && p.Name.ToLower().Contains(lower)) || (p.Tags != null && p.Tags.Any(t => t != null && t.ToLower().Contains(lower))))
+                .ToList();
+            return result;
         }
 
         private bool ProductExists(int id)

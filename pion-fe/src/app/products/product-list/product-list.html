@@ -2,6 +2,13 @@
   <h2>Danh sách sản phẩm</h2>
   <a routerLink="/products/new" class="btn btn-success mb-3">Thêm sản phẩm</a>
 
+  <div class="mb-3">
+    <input type="text" [(ngModel)]="searchKeyword" placeholder="Tìm kiếm sản phẩm" class="form-control"
+      style="max-width:300px; display:inline-block;">
+    <button class="btn btn-primary ms-2" (click)="onSearch()">Tìm kiếm</button>
+    <button class="btn btn-secondary ms-2" (click)="clearSearch()" *ngIf="searchKeyword">Xoá</button>
+  </div>
+
   <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
     <div class="col" *ngFor="let product of products">
       <div class="card h-100">

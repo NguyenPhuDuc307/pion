@@ -4,15 +4,17 @@ import { ProductService } from '../../services/product';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { environment } from '../../../environments/environment';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-product-list',
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './product-list.html',
   styleUrl: './product-list.css'
 })
 export class ProductListComponent implements OnInit {
   products: Product[] = [];
+  searchKeyword: string = '';
 
   constructor(private productService: ProductService) { }
 
@@ -35,5 +37,16 @@ export class ProductListComponent implements OnInit {
     this.productService.delete(id).subscribe(() => {
       this.loadProducts();
     });
+  }
+
+  onSearch(): void {
+    this.productService.search(this.searchKeyword).subscribe(data => {
+      this.products = data;
+    });
+  }
+
+  clearSearch(): void {
+    this.searchKeyword = '';
+    this.loadProducts();
   }
 }
