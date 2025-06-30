@@ -34,9 +34,11 @@ export class ProductListComponent implements OnInit {
   }
 
   deleteProduct(id: number): void {
-    this.productService.delete(id).subscribe(() => {
-      this.loadProducts();
-    });
+    if (confirm('Bạn có chắc chắn muốn xóa sản phẩm này không?')) {
+      this.productService.delete(id).subscribe(() => {
+        this.loadProducts();
+      });
+    }
   }
 
   onSearch(): void {
