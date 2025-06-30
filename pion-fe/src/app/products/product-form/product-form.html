@@ -4,25 +4,28 @@
   <form (ngSubmit)="onSubmit()" #productForm="ngForm" class="needs-validation" novalidate>
     <div class="mb-3">
       <label for="name" class="form-label">Tên sản phẩm:</label>
-      <input type="text" id="name" name="name" class="form-control" [(ngModel)]="product.name" required />
+      <input type="text" id="name" name="name" class="form-control" [(ngModel)]="product.name" required
+        autocomplete="off" />
     </div>
 
     <div class="mb-3">
-      <label for="tags" class="form-label">Tags:</label>
+      <label for="tags" class="form-label" id="tags-label">Tags:</label>
       <ng-select id="tags" name="tags" [items]="availableTags" [(ngModel)]="product.tags"
-        [multiple]="true" bindLabel="name" placeholder="Chọn tag" [closeOnSelect]="false">
+        [multiple]="true" bindLabel="name" placeholder="Chọn tag" [closeOnSelect]="false"
+        aria-labelledby="tags-label">
       </ng-select>
     </div>
 
     <div class="mb-3">
-      <label for="image" class="form-label">Ảnh sản phẩm:</label>
-      <input type="file" id="image" class="form-control" accept="image/*" (change)="onFileSelected($event)" />
+      <label for="image" class="form-label" id="image-label">Ảnh sản phẩm:</label>
+      <input type="file" id="image" name="image" class="form-control" accept="image/*" (change)="onFileSelected($event)" aria-describedby="image-label" />
     </div>
 
     <!-- Xem trước ảnh -->
     <div *ngIf="imagePreview" class="mb-3">
-      <label class="form-label">Xem trước:</label><br />
-      <img [src]="imagePreview" alt="Preview" class="img-thumbnail" style="max-width: 200px;" />
+      <label class="form-label" for="image-preview">Xem trước:</label><br />
+      <img [src]="imagePreview" id="image-preview" alt="Ảnh xem trước sản phẩm" class="img-thumbnail"
+        style="max-width: 200px;" />
     </div>
 
     <button type="submit" class="btn btn-primary">
